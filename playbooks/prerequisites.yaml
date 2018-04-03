@@ -1,0 +1,61 @@
+---
+libvirt_storage_pool_path: "/home/pchoo/VirtualMachines"
+libvirt_storage_pool: "default"
+libvirt_network: "virbr0"
+libvirt_uri: "qemu:///system"
+
+domain_name: "gluster.com"
+image_location: "/home/pchoo/Documents/git-repos/ansible_kvm/templates/rhel7.4.qcow2"
+image_os_type: "rhel7"
+image_file_type: "qcow2"
+
+######KVM Properties########
+
+nodes:
+  - name: linux_client
+    memory_mb: 4096
+    vcpu: 2
+    block_size: "20G"
+    mac: "f2:00:00:00:00:01"
+ 
+  - name: webadmin
+    memory_mb: 4096
+    vcpu: 2
+    block_size: "20G"
+    mac: "f2:00:00:00:01:01"
+
+  - name: gluster1
+    memory_mb: 4096
+    vcpu: 4
+    block_size: "20G"
+    mac: "f2:00:00:00:02:01"
+
+  - name: gluster2
+    memory_mb: 4096
+    vcpu: 4
+    block_size: "20G"
+    mac: "f2:00:00:00:02:02"
+
+  - name: gluster3
+    memory_mb: 4096
+    vcpu: 4
+    block_size: "20G"
+    mac: "f2:00:00:00:02:03"
+
+  - name: gluster4
+    memory_mb: 4096
+    vcpu: 4
+    block_size: "20G"
+    mac: "f2:00:00:00:02:04"
+
+  - name: gluster5
+    memory_mb: 4096
+    vcpu: 4
+    block_size: "20G"
+    mac: "f2:00:00:00:02:05"
+
+  - name: gluster6
+    memory_mb: 4096
+    vcpu: 4
+    block_size: "20G"
+    mac: "f2:00:00:00:02:06"

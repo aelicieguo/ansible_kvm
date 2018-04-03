@@ -1,0 +1,54 @@
+---
+- name: Create VMs
+  hosts: localhost
+  become: true
+  vars_files:
+    - prerequisites.yaml
+  
+  tasks:
+    - name: get VM disks
+      command: "ls {{ libvirt_storage_pool_path }}"
+      register: disks
+      changed_when: "disks.rc != 0"
+
+    - name: create root disk
+      command: 'qemu-img create -f {{ image_file_type }} -o cluster_size={{ item.memory_mb }} {{ libvirt_storage_pool_path }}/{{ item.name }}-os.{{ image_file_type }} {{ item.block_size }}'
+#      when: '{{ item.key }}-{{ domain_name }}' not in disks.stdout
+      with_items: "{{ nodes }}"
+
+    - name: create sdb disk
+      command: 'qemu-img create -f {{ image_file_type }} {{ libvirt_storage_pool_path }}/{{ item.name }}-sdb.{{ image_file_type }} 2G'
+      with_items: "{{ nodes }}"
+
+    - name: create sdc disk
+      command: 'qemu-img create -f {{ image_file_type }} {{ libvirt_storage_pool_path }}/{{ item.name }}-sdc.{{ image_file_type }} 2G'
+      with_items: "{{ nodes }}"
+
+#    - name: create vm
+#      command: 'virt-install --connect={{ libvirt_uri }} \
+#                             --name={{ item.name }}-{{ domain_name }} \
+#                             --memory={{ item.memory_mb }} \
+#                             --vcpu={{ item.vcpu }} \
+#                             --arch=x86_64 \
+#                             --os-type=linux \
+#                             --os-variant={{ image_os_type }} \ 
+#                             --hvm \                      
+#                             --virt-type kvm \
+#                             --cdrom={{ image_location }} \
+#                             --disk path={{ libvirt_storage_pool_path }}/{{ item.name }}-{{ domain_name }}.{{ image_file_type }},format={{ image_file_type }},bus=virtio \
+#                             --network bridge={{ libvirt_network }},model=virtio \
+#                             --graphics vnc'
+    
+    - name: create vm
+      virt:
+        name: '{{ item.name }}.{{ domain_name }}'
+        command: define
+        xml: "{{ lookup('template', '../templates/domain.xml') }}"
+        uri: '{{ libvirt_uri }}'
+      with_items: '{{ nodes }}'
+                       
+    - name: start vm
+      virt:
+        name: '{{ item.name }}.{{ domain_name }}'
+        state: running
+      with_items: "{{ nodes }}" 
