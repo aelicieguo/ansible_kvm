@@ -16,39 +16,50 @@
 #      when: '{{ item.key }}-{{ domain_name }}' not in disks.stdout
       with_items: "{{ nodes }}"
 
+    - name: create root disk
+      command: 'qemu-img create -f {{ image_file_type }} -o cluster_size={{ item.memory_mb }} {{ libvirt_storage_pool_path }}/{{ item.name }}-os.{{ image_file_type }} {{ item.block_size }}'
+      with_items: "{{ gluster_nodes }}"
+
     - name: create sdb disk
       command: 'qemu-img create -f {{ image_file_type }} {{ libvirt_storage_pool_path }}/{{ item.name }}-sdb.{{ image_file_type }} 2G'
-      with_items: "{{ nodes }}"
+      with_items: "{{ gluster_nodes }}"
 
     - name: create sdc disk
       command: 'qemu-img create -f {{ image_file_type }} {{ libvirt_storage_pool_path }}/{{ item.name }}-sdc.{{ image_file_type }} 2G'
-      with_items: "{{ nodes }}"
+      with_items: "{{ gluster_nodes }}"
 
-#    - name: create vm
-#      command: 'virt-install --connect={{ libvirt_uri }} \
-#                             --name={{ item.name }}-{{ domain_name }} \
-#                             --memory={{ item.memory_mb }} \
-#                             --vcpu={{ item.vcpu }} \
-#                             --arch=x86_64 \
-#                             --os-type=linux \
-#                             --os-variant={{ image_os_type }} \ 
-#                             --hvm \                      
-#                             --virt-type kvm \
-#                             --cdrom={{ image_location }} \
-#                             --disk path={{ libvirt_storage_pool_path }}/{{ item.name }}-{{ domain_name }}.{{ image_file_type }},format={{ image_file_type }},bus=virtio \
-#                             --network bridge={{ libvirt_network }},model=virtio \
-#                             --graphics vnc'
-    
-    - name: create vm
+    - name: create webadmin and linux_client vm
+      command: 'virt-install --connect={{ libvirt_uri }} \
+                             --name={{ item.name }}.{{ domain_name }} \
+                             --memory={{ item.memory_mb }} \
+                             --vcpu={{ item.vcpu }} \
+                             --arch=x86_64 \
+                             --os-type=linux \
+                             --os-variant={{ image_os_type }} \ 
+                             --hvm \                      
+                             --virt-type kvm \
+                             --cdrom={{ image_location }} \
+                             --disk path={{ libvirt_storage_pool_path }}/{{ item.name }}-{{ domain_name }}.{{ image_file_type }},format={{ image_file_type }},bus=virtio \
+                             --network bridge={{ libvirt_network }},model=virtio \
+                             --graphics vnc'
+      with_items: '{{ nodes }}'
+
+    - name: create gluster vm
       virt:
         name: '{{ item.name }}.{{ domain_name }}'
         command: define
         xml: "{{ lookup('template', '../templates/domain.xml') }}"
         uri: '{{ libvirt_uri }}'
-      with_items: '{{ nodes }}'
+      with_items: '{{ gluster_nodes }}'
                        
-    - name: start vm
+    - name: start gluster vm
       virt:
         name: '{{ item.name }}.{{ domain_name }}'
         state: running
       with_items: "{{ nodes }}" 
+
+    - name: start linux_client and webadmin vm
+      virt:
+        name: '{{ item.name }}.{{ domain_name }}'
+        state: running
+      with_items: "{{ gluster_nodes }}"
