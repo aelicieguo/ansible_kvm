@@ -52,13 +52,13 @@
         uri: '{{ libvirt_uri }}'
       with_items: '{{ gluster_nodes }}'
                        
-    - name: start gluster vm
+    - name: start linux_client and webadmin vm
       virt:
         name: '{{ item.name }}.{{ domain_name }}'
         state: running
       with_items: "{{ nodes }}" 
 
-    - name: start linux_client and webadmin vm
+    - name: start gluster vm
       virt:
         name: '{{ item.name }}.{{ domain_name }}'
         state: running
