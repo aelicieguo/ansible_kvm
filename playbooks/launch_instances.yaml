@@ -11,12 +11,12 @@
       register: disks
       changed_when: "disks.rc != 0"
 
-    - name: create root disk
+    - name: create linux_client and webadmin disk
       command: 'qemu-img create -f {{ image_file_type }} -o cluster_size={{ item.memory_mb }} {{ libvirt_storage_pool_path }}/{{ item.name }}-os.{{ image_file_type }} {{ item.block_size }}'
 #      when: '{{ item.key }}-{{ domain_name }}' not in disks.stdout
       with_items: "{{ nodes }}"
 
-    - name: create root disk
+    - name: create gluster disk
       command: 'qemu-img create -f {{ image_file_type }} -o cluster_size={{ item.memory_mb }} {{ libvirt_storage_pool_path }}/{{ item.name }}-os.{{ image_file_type }} {{ item.block_size }}'
       with_items: "{{ gluster_nodes }}"
 
