@@ -1,11 +1,11 @@
 ---
-libvirt_storage_pool_path: "/home/pchoo/VirtualMachines"
-libvirt_storage_pool: "default"
-libvirt_network: "virbr0"
+libvirt_storage_pool_path: "" # storage folder path
+libvirt_storage_pool: "" # name of storage pool
+libvirt_network: "" # name of network
 libvirt_uri: "qemu:///system"
 
-domain_name: "gluster.com"
-image_location: "/home/pchoo/Documents/git-repos/ansible_kvm/templates/rhel7.4.qcow2"
+domain_name: "" # domain name
+image_location: "" # file path to os image
 image_os_type: "rhel7"
 image_file_type: "qcow2"
 
