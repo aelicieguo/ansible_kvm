@@ -44,12 +44,8 @@
                              --graphics vnc'
       with_items: '{{ nodes }}'
 
-    - name: create gluster vm
-      virt:
-        name: '{{ item.name }}.{{ domain_name }}'
-        command: define
-        xml: "{{ lookup('template', '../templates/domain.xml') }}"
-        uri: '{{ libvirt_uri }}'
+    - name: attach disk to gluster vm
+      command: 'virsh attach-disk {{ item.name }}.{{ domain_name }} {{ libvirt_storage_pool_path }}/{{ item.name }}-sdb vdb -- cache none'
       with_items: '{{ gluster_nodes }}'
                        
     - name: start linux_client and webadmin vm
