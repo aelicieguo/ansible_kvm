@@ -1,0 +1,30 @@
+---
+##########    STORAGE POOL     ##########
+libvirt_storage_pool_path: ""                           # storage folder path
+libvirt_storage_pool: ""                                # name of storage pool
+libvirt_uri: "qemu:///system"
+
+##########     NETWORK     ##########
+libvirt_network: ""                                     # type of network
+network_source: ""                                      # name of host network
+device_model: "virtio"                                  # device model of NIC
+
+##########     OS INFO     ##########
+domain_name: "example.com"                              # domain name
+image_location: ""                                      # file path to os image copied frm existing img
+image_os_type: "rhel7"
+image_file_type: "qcow2"
+
+##########     KVM PROPERTIES     ##########
+nodes:
+  - name: linux_client
+    memory_mb: 4096
+    vcpu: 2
+    block_size: "20G"
+    mac: "f2:00:00:00:00:01"
+ 
+  - name: webadmin
+    memory_mb: 4096
+    vcpu: 2
+    block_size: "20G"
+    mac: "f2:00:00:00:01:01"
