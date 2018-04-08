@@ -1,0 +1,35 @@
+---
+- name: Create VMs
+  hosts: localhost
+  become: true
+  vars_files:
+    - prerequisites_1.yaml
+  
+  tasks:
+   - name: Create VM os disks
+     command: 'qemu-img create -f {{ image_file_type }} -o backing_file={{ image_location }} {{ libvirt_storage_pool_path }}/{{ item.name }}.{{ domain_name }}-os.{{ image_file_type }}'
+     with_items: '{{ nodes }}' 
+
+   - name: Refresh the libvirt storage pool for openshift
+     command: 'virsh -c {{ libvirt_uri }} pool-refresh {{ libvirt_storage_pool }}'
+     with_items: '{{ nodes }}'
+
+   - name: Provision VM
+     command: 'virt-install \
+                            --name={{ item.name }}.{{ domain_name }} \
+                            --memory={{ item.memory_mb }} \
+                            --vcpu={{ item.vcpu }} \
+                            --disk path={{ libvirt_storage_pool_path }}/{{ item.name }}.{{ domain_name }}-os.{{ image_file_type }},format={{ image_file_type }},bus=virtio \
+          		    --import \
+                            --arch=x86_64 \
+                            --os-type=linux \
+                            --os-variant={{ image_os_type }} \
+                            --network type={{ libvirt_network }},source={{ network_source }},model={{ device_model }}'
+     with_items: '{{ nodes }}'
+
+   - name: Start VMs
+     virt:
+       name: '{{ item.name }}.{{ domain_name }}'
+       state: running
+       uri: '{{ libvirt_uri }}'
+     with_items: '{{ nodes }}'
