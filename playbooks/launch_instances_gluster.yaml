@@ -43,7 +43,7 @@
      with_items: '{{ gluster_nodes }}'
 
    - name: Add disk 1 to created Gluster VM
-     command: 'virsh attach-disk {{ item.name }}.{{ domain_name }} {{ libvirt_storage_pool_path }}/{{ item.name }}.{{ domain_name }}-gluster-storage1.{{ image_file_type }} vdb --cache none'
+     command: 'virsh attach-disk {{ item.name }}.{{ domain_name }} --source {{ libvirt_storage_pool_path }}/{{ item.name }}.{{ domain_name }}-gluster-storage1.{{ image_file_type }} --target vdb --persistence'
      with_items: "{{ gluster_nodes }}"
 
    - name: Add disk 2 to created Gluster VM
