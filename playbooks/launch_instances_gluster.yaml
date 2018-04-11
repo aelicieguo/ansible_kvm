@@ -11,11 +11,11 @@
      with_items: '{{ gluster_nodes }}' 
 
    - name: Create VM storage disk 1 
-     command: 'qemu-img create -f {{ image_file_type }} -o cluster_size={{ item.memory_mb }} {{ libvirt_storage_pool_path }}/{{ item.name }}.{{ domain_name }}-gluster-storage1.{{ image_file_type }} {{ item.block_size }}'
+     command: 'qemu-img create -f {{ image_file_type }} -o cluster_size={{ item.memory_mb }} {{ libvirt_storage_pool_path }}/{{ item.name }}.{{ domain_name }}-gluster-storage1.{{ image_file_type }} {{ item.storage_block_size }}'
      with_items: '{{ gluster_nodes }}' 
 
    - name: Create VM storage disk 2 
-     command: 'qemu-img create -f {{ image_file_type }} -o cluster_size={{ item.memory_mb }} {{ libvirt_storage_pool_path }}/{{ item.name }}.{{ domain_name }}-gluster-storage2.{{ image_file_type }} {{ item.block_size }}'
+     command: 'qemu-img create -f {{ image_file_type }} -o cluster_size={{ item.memory_mb }} {{ libvirt_storage_pool_path }}/{{ item.name }}.{{ domain_name }}-gluster-storage2.{{ image_file_type }} {{ item.storage_block_size }}'
      with_items: '{{ gluster_nodes }}' 
    
    - name: Refresh the libvirt storage pool for openshift
