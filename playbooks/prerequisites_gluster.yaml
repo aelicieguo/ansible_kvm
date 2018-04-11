@@ -21,35 +21,41 @@ gluster_nodes:
   - name: gluster1
     memory_mb: 4096
     vcpu: 4
-    block_size: "20G"
+    os_block_size: "20G"
+    storage_block_size: "2G"
     mac: "f2:00:00:00:02:01"
 
   - name: gluster2
     memory_mb: 4096
     vcpu: 4
-    block_size: "20G"
+    os_block_size: "20G"
+    storage_block_size: "2G"
     mac: "f2:00:00:00:02:02"
 
   - name: gluster3
     memory_mb: 4096
     vcpu: 4
-    block_size: "20G"
+    os_block_size: "20G"
+    storage_block_size: "2G"
     mac: "f2:00:00:00:02:03"
 
   - name: gluster4
     memory_mb: 4096
     vcpu: 4
-    block_size: "20G"
+    os_block_size: "20G"
+    storage_block_size: "2G"
     mac: "f2:00:00:00:02:04"
 
   - name: gluster5
     memory_mb: 4096
     vcpu: 4
-    block_size: "20G"
+    os_block_size: "20G"
+    storage_block_size: "2G"
     mac: "f2:00:00:00:02:05"
 
   - name: gluster6
     memory_mb: 4096
     vcpu: 4
-    block_size: "20G"
+    os_block_size: "20G"
+    storage_block_size: "2G"
     mac: "f2:00:00:00:02:06"
