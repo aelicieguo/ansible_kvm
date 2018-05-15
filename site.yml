@@ -1,0 +1,6 @@
+---
+# main yaml
+
+- import_playbook: playbooks/launch_instances.yml
+
+- import playbook: playbooks/host_prep.yml
