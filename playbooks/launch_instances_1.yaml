@@ -22,7 +22,6 @@
 
    - name: Refresh the libvirt storage pool for openshift
      command: 'virsh -c {{ libvirt_uri }} pool-refresh {{ libvirt_storage_pool }}'
-     with_items: '{{ nodes }}'
 
    - name: Provision VM
      command: 'virt-install \
@@ -30,7 +29,7 @@
                             --memory={{ item.memory_mb }} \
                             --vcpu={{ item.vcpu }} \
                             --disk path={{ libvirt_storage_pool_path }}/{{ item.name }}.{{ domain_name }}-os.{{ image_file_type }},format={{ image_file_type }},bus=virtio \
-          		    --import \
+          		              --import \
                             --arch=x86_64 \
                             --os-type=linux \
                             --os-variant={{ image_os_type }} \
@@ -42,7 +41,9 @@
        name: '{{ item.name }}.{{ domain_name }}'
        state: running
        uri: '{{ libvirt_uri }}'
-     with_items: '{{ nodes }}'
+     with_items:
+       - '{{ nodes }}'
+       - '{{ gluster_nodes }}'
      
    - name: Add disk 1 to created Gluster VM
      command: 'virsh attach-disk {{ item.name }}.{{ domain_name }} --source {{ libvirt_storage_pool_path }}/{{ item.name }}.{{ domain_name }}-gluster-storage1.{{ image_file_type }} --target vdb --persistent --cache none'
