@@ -17,14 +17,49 @@ image_file_type: "qcow2"
 
 ##########     KVM PROPERTIES     ##########
 nodes:
-  - name: linux_client
-    memory_mb: 4096
-    vcpu: 2
-    block_size: "20G"
+  - name: satellite
+    memory_mb: 9216 # minimum 8GiB free
+    vcpu: 4
+    OS_block_size: "20G"
     mac: "f2:00:00:00:00:01"
  
   - name: webadmin
     memory_mb: 4096
     vcpu: 2
-    block_size: "20G"
+    OS_block_size: "20G"
     mac: "f2:00:00:00:01:01"
+
+gluster_nodes:
+  - name: gluster
+    memory_mb: 4096
+    vcpu: 4
+    OS_block_size: "80G"
+    storage_block_size: "100G"
+    mac: "f2:00:00:00:02:01"
+    
+master:
+  - name: master
+    memory_mb: 8129
+    vcpu: 2
+    OS_block_size: "100G"
+    mac: "f2:00:00:00:03:01"
+   
+worker:
+  - name: node-1
+    memory_mb: 10240
+    vcpu: 4
+    OS_block_size: "100G"
+    mac: "f2:00:00:00:04:01"
+  
+  - name: node-2
+    memory_mb: 10240
+    vcpu: 4
+    OS_block_size: "100G"
+    mac: "f2:00:00:00:04:02"
+    
+infra:
+  - name: infra-1
+    memory_mb: 8129
+    vcpu: 2
+    OS_block_size: "80G"
+    mac: "f2:00:00:00:05:01"
