@@ -71,8 +71,10 @@
       - sos
       - psacct
 
-  - name: Yum update
-    command: 'yum update -y'
+  - name: Yum update all packages
+    yum:
+      name=*
+      state=latest
 
   - name: Yum install
     yum:
