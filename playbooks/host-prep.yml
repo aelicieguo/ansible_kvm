@@ -1,0 +1,122 @@
+---
+- name: Prepare host prior to OpenShift Installation
+  become: true
+  hosts: all
+  user: root
+  vars_files:
+  - vars.yml
+  
+  tasks:
+  - name: Amend resolv.conf
+    blockinfile:
+      path: /etc/resolv.conf
+      block: |
+        nameserver 192.168.122.200
+        nameserver 192.168.122.1
+
+  - name: Remove machine id
+    file: 
+      state: absent
+      path: "/etc/machine-id"
+
+  - name: Generate machine id
+    command: 'dbus-uuidgen --ensure=/etc/machine-id'
+
+  - name: Recreate id to /var/lib/dbus
+    command: 'dbus-uuidgen --ensure'
+
+  - name: Reboot the server
+    shell: sleep 2 && shutdown -r now
+    async: 1
+    poll: 0
+
+  - name: Wait for server come back
+    wait_for: >
+         host={{ inventory_hostname }}
+         port=22
+         delay=15
+         timeout=600
+    delegate_to: localhost
+
+  - name: Register subscription
+    command: 'subscription-manager register --username={{ username }} --password={{ password }}'
+
+  - name: Attach subscription
+    command: 'subscription-manager attach --pool={{ pool }}'
+
+  - name: Disable repos
+    command: 'subscription-manager repos --disable="*"'
+
+  - name: Enable proper repos 
+    command: 'subscription-manager repos \
+    --enable="rhel-7-server-rpms" \
+    --enable="rhel-7-server-extras-rpms" \
+    --enable="rhel-7-server-ose-3.9-rpms" \
+    --enable="rhel-7-fast-datapath-rpms" \
+    --enable="rhel-7-server-ansible-2.4-rpms"'
+  
+  - name: Install base package
+    yum:
+      name: '{{ item }}'
+      state: latest
+    with_items:
+      - wget
+      - git
+      - net-tools
+      - bind-utils
+      - iptables-services
+      - bridge-utils
+      - bash-completion
+      - kexec-tools
+      - sos
+      - psacct
+
+  - name: Yum update
+    command: 'yum update -y'
+
+  - name: Yum install
+    yum:
+      name: atomic-openshift-utils
+      state: latest
+
+  - name: Reboot the server
+    shell: sleep 2 && shutdown -r now
+    async: 1 
+    poll: 0 
+   
+  - name: Wait for server come back
+    wait_for: > 
+         host={{ inventory_hostname }}
+         port=22
+         delay=15
+         timeout=600
+    delegate_to: localhost
+
+  - name: Install docker
+    yum:
+      name: docker-1.13.1
+      state: present
+ 
+  - name: Set docker config file
+    blockinfile:
+      path: /etc/sysconfig/docker-storage-setup
+      block: |
+        DEVS=/dev/vdb
+        CONTAINER_ROOT_LV_NAME=docker-lv
+        CONTAINER_ROOT_LV_SIZE=100%FREE
+        CONTAINER_ROOT_LV_MOUNT_PATH=/var/lib/docker
+        VG=docker-vg
+
+  - name: Create docker-pool volume
+    command: 'docker-storage-setup'
+
+  - name: Start docker
+    service:
+      name: docker
+      enabled: true
+      state: started
+
+  - name: Install atomic package
+    yum:
+      name: atomic
+      state: latest
